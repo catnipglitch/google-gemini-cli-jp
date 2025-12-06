@@ -1,128 +1,114 @@
-# Observability with OpenTelemetry
+# OpenTelemetry による可観測性 (Observability)
 
-Learn how to enable and setup OpenTelemetry for Gemini CLI.
+Gemini CLI で OpenTelemetry を有効にして設定する方法を学びます。
 
-- [Observability with OpenTelemetry](#observability-with-opentelemetry)
-  - [Key benefits](#key-benefits)
-  - [OpenTelemetry integration](#opentelemetry-integration)
-  - [Configuration](#configuration)
-  - [Google Cloud telemetry](#google-cloud-telemetry)
-    - [Prerequisites](#prerequisites)
-    - [Direct export (recommended)](#direct-export-recommended)
-    - [Collector-based export (advanced)](#collector-based-export-advanced)
-  - [Local telemetry](#local-telemetry)
-    - [File-based output (recommended)](#file-based-output-recommended)
-    - [Collector-based export (advanced)](#collector-based-export-advanced-1)
-  - [Logs and metrics](#logs-and-metrics)
-    - [Logs](#logs)
-      - [Sessions](#sessions)
-      - [Tools](#tools)
-      - [Files](#files)
+- [OpenTelemetry による可観測性](#opentelemetry-による可観測性-observability)
+  - [主な利点](#主な利点)
+  - [OpenTelemetry の統合](#opentelemetry-の統合)
+  - [設定](#設定)
+  - [Google Cloud テレメトリ](#google-cloud-テレメトリ)
+    - [前提条件](#前提条件)
+    - [直接エクスポート（推奨）](#直接エクスポート推奨)
+    - [コレクターベースのエクスポート（上級者向け）](#コレクターベースのエクスポート上級者向け)
+  - [ローカルテレメトリ](#ローカルテレメトリ)
+    - [ファイルベースの出力（推奨）](#ファイルベースの出力推奨)
+    - [コレクターベースのエクスポート（上級者向け）](#コレクターベースのエクスポート上級者向け-1)
+  - [ログとメトリクス](#ログとメトリクス)
+    - [ログ](#ログ)
+      - [セッション](#セッション)
+      - [ツール](#ツール)
+      - [ファイル](#ファイル)
       - [API](#api)
-      - [Model routing](#model-routing)
-      - [Chat and streaming](#chat-and-streaming)
-      - [Resilience](#resilience)
-      - [Extensions](#extensions)
-      - [Agent runs](#agent-runs)
+      - [モデルルーティング](#モデルルーティング)
+      - [チャットとストリーミング](#チャットとストリーミング)
+      - [回復力 (Resilience)](#回復力-resilience)
+      - [拡張機能](#拡張機能)
+      - [エージェント実行](#エージェント実行)
       - [IDE](#ide)
       - [UI](#ui)
-    - [Metrics](#metrics)
-      - [Custom](#custom)
-        - [Sessions](#sessions-1)
-        - [Tools](#tools-1)
+    - [メトリクス](#メトリクス)
+      - [カスタム](#カスタム)
+        - [セッション](#セッション-1)
+        - [ツール](#ツール-1)
         - [API](#api-1)
-        - [Token usage](#token-usage)
-        - [Files](#files-1)
-        - [Chat and streaming](#chat-and-streaming-1)
-        - [Model routing](#model-routing-1)
-        - [Agent runs](#agent-runs-1)
+        - [トークン使用量](#トークン使用量)
+        - [ファイル](#ファイル-1)
+        - [チャットとストリーミング](#チャットとストリーミング-1)
+        - [モデルルーティング](#モデルルーティング-1)
+        - [エージェント実行](#エージェント実行-1)
         - [UI](#ui-1)
-        - [Performance](#performance)
-      - [GenAI semantic convention](#genai-semantic-convention)
+        - [パフォーマンス](#パフォーマンス)
+      - [GenAI セマンティック規約](#genai-セマンティック規約)
 
-## Key benefits
+## 主な利点
 
-- **🔍 Usage analytics**: Understand interaction patterns and feature adoption
-  across your team
-- **⚡ Performance monitoring**: Track response times, token consumption, and
-  resource utilization
-- **🐛 Real-time debugging**: Identify bottlenecks, failures, and error patterns
-  as they occur
-- **📊 Workflow optimization**: Make informed decisions to improve
-  configurations and processes
-- **🏢 Enterprise governance**: Monitor usage across teams, track costs, ensure
-  compliance, and integrate with existing monitoring infrastructure
+- **🔍 利用分析**: チーム全体での対話パターンや機能の採用状況を把握
+- **⚡ パフォーマンス監視**: 応答時間、トークン消費、リソース使用率を追跡
+- **🐛 リアルタイムデバッグ**: 発生したボトルネック、障害、エラーパターンを特定
+- **📊 ワークフローの最適化**: 構成やプロセスを改善するための情報に基づいた意思決定を行う
+- **🏢 企業ガバナンス**: チーム間の利用状況の監視、コストの追跡、コンプライアンスの確保、既存の監視インフラとの統合
 
-## OpenTelemetry integration
+## OpenTelemetry の統合
 
-Built on **[OpenTelemetry]** — the vendor-neutral, industry-standard
-observability framework — Gemini CLI's observability system provides:
+ベンダー中立の業界標準の可観測性フレームワークである **[OpenTelemetry]** 上に構築された Gemini CLI の可観測性システムは、以下を提供します：
 
-- **Universal compatibility**: Export to any OpenTelemetry backend (Google
-  Cloud, Jaeger, Prometheus, Datadog, etc.)
-- **Standardized data**: Use consistent formats and collection methods across
-  your toolchain
-- **Future-proof integration**: Connect with existing and future observability
-  infrastructure
-- **No vendor lock-in**: Switch between backends without changing your
-  instrumentation
+- **普遍的な互換性**: 任意の OpenTelemetry バックエンド（Google Cloud, Jaeger, Prometheus, Datadog など）にエクスポート可能
+- **標準化されたデータ**: ツールチェーン全体で一貫した形式と収集方法を使用
+- **将来を見据えた統合**: 既存および将来の可観測性インフラストラクチャと接続
+- **ベンダーロックインなし**: 計装を変更することなくバックエンドを切り替え可能
 
 [OpenTelemetry]: https://opentelemetry.io/
 
-## Configuration
+## 設定
 
-All telemetry behavior is controlled through your `.gemini/settings.json` file.
-Environment variables can be used to override the settings in the file.
+すべてのテレメトリ動作は `.gemini/settings.json` ファイルで制御されます。環境変数を使用してファイル内の設定を上書きできます。
 
-| Setting        | Environment Variable             | Description                                         | Values            | Default                 |
+| 設定項目       | 環境変数                         | 説明                                                | 値                | デフォルト               |
 | -------------- | -------------------------------- | --------------------------------------------------- | ----------------- | ----------------------- |
-| `enabled`      | `GEMINI_TELEMETRY_ENABLED`       | Enable or disable telemetry                         | `true`/`false`    | `false`                 |
-| `target`       | `GEMINI_TELEMETRY_TARGET`        | Where to send telemetry data                        | `"gcp"`/`"local"` | `"local"`               |
-| `otlpEndpoint` | `GEMINI_TELEMETRY_OTLP_ENDPOINT` | OTLP collector endpoint                             | URL string        | `http://localhost:4317` |
-| `otlpProtocol` | `GEMINI_TELEMETRY_OTLP_PROTOCOL` | OTLP transport protocol                             | `"grpc"`/`"http"` | `"grpc"`                |
-| `outfile`      | `GEMINI_TELEMETRY_OUTFILE`       | Save telemetry to file (overrides `otlpEndpoint`)   | file path         | -                       |
-| `logPrompts`   | `GEMINI_TELEMETRY_LOG_PROMPTS`   | Include prompts in telemetry logs                   | `true`/`false`    | `true`                  |
-| `useCollector` | `GEMINI_TELEMETRY_USE_COLLECTOR` | Use external OTLP collector (advanced)              | `true`/`false`    | `false`                 |
-| `useCliAuth`   | `GEMINI_TELEMETRY_USE_CLI_AUTH`  | Use CLI credentials for telemetry (GCP target only) | `true`/`false`    | `false`                 |
+| `enabled`      | `GEMINI_TELEMETRY_ENABLED`       | テレメトリの有効/無効                               | `true`/`false`    | `false`                 |
+| `target`       | `GEMINI_TELEMETRY_TARGET`        | テレメトリデータの送信先                            | `"gcp"`/`"local"` | `"local"`               |
+| `otlpEndpoint` | `GEMINI_TELEMETRY_OTLP_ENDPOINT` | OTLP コレクターエンドポイント                       | URL 文字列        | `http://localhost:4317` |
+| `otlpProtocol` | `GEMINI_TELEMETRY_OTLP_PROTOCOL` | OTLP トランスポートプロトコル                       | `"grpc"`/`"http"` | `"grpc"`                |
+| `outfile`      | `GEMINI_TELEMETRY_OUTFILE`       | テレメトリをファイルに保存（`otlpEndpoint` を上書き） | ファイルパス      | -                       |
+| `logPrompts`   | `GEMINI_TELEMETRY_LOG_PROMPTS`   | テレメトリログにプロンプトを含める                  | `true`/`false`    | `true`                  |
+| `useCollector` | `GEMINI_TELEMETRY_USE_COLLECTOR` | 外部 OTLP コレクターを使用（上級者向け）            | `true`/`false`    | `false`                 |
+| `useCliAuth`   | `GEMINI_TELEMETRY_USE_CLI_AUTH`  | テレメトリに CLI 認証情報を使用（GCP ターゲットのみ）| `true`/`false`    | `false`                 |
 
-**Note on boolean environment variables:** For the boolean settings (`enabled`,
-`logPrompts`, `useCollector`), setting the corresponding environment variable to
-`true` or `1` will enable the feature. Any other value will disable it.
+**ブール値の環境変数に関する注意:** ブール値の設定（`enabled`, `logPrompts`, `useCollector`）については、対応する環境変数を `true` または `1` に設定すると機能が有効になります。それ以外の値に設定すると無効になります。
 
-For detailed information about all configuration options, see the
-[Configuration guide](../get-started/configuration.md).
+すべての設定オプションの詳細については、[設定ガイド](../get-started/configuration.md)を参照してください。
 
-## Google Cloud telemetry
+## Google Cloud テレメトリ
 
-### Prerequisites
+### 前提条件
 
-Before using either method below, complete these steps:
+以下のいずれかの方法を使用する前に、次の手順を完了してください：
 
-1. Set your Google Cloud project ID:
-   - For telemetry in a separate project from inference:
+1. Google Cloud プロジェクト ID を設定する：
+   - 推論とは別のプロジェクトでテレメトリを行う場合：
      ```bash
      export OTLP_GOOGLE_CLOUD_PROJECT="your-telemetry-project-id"
      ```
-   - For telemetry in the same project as inference:
+   - 推論と同じプロジェクトでテレメトリを行う場合：
      ```bash
      export GOOGLE_CLOUD_PROJECT="your-project-id"
      ```
 
-2. Authenticate with Google Cloud:
-   - If using a user account:
+2. Google Cloud で認証する：
+   - ユーザーアカウントを使用する場合：
      ```bash
      gcloud auth application-default login
      ```
-   - If using a service account:
+   - サービスアカウントを使用する場合：
      ```bash
      export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account.json"
      ```
-3. Make sure your account or service account has these IAM roles:
+3. アカウントまたはサービスアカウントに以下の IAM ロールがあることを確認する：
    - Cloud Trace Agent
    - Monitoring Metric Writer
    - Logs Writer
 
-4. Enable the required Google Cloud APIs (if not already enabled):
+4. 必要な Google Cloud API を有効にする（まだ有効になっていない場合）：
    ```bash
    gcloud services enable \
      cloudtrace.googleapis.com \
@@ -131,15 +117,11 @@ Before using either method below, complete these steps:
      --project="$OTLP_GOOGLE_CLOUD_PROJECT"
    ```
 
-### Authenticating with CLI Credentials
+### CLI 認証情報による認証
 
-By default, the telemetry collector for Google Cloud uses Application Default
-Credentials (ADC). However, you can configure it to use the same OAuth
-credentials that you use to log in to the Gemini CLI. This is useful in
-environments where you don't have ADC set up.
+デフォルトでは、Google Cloud 用のテレメトリコレクターは Application Default Credentials (ADC) を使用します。ただし、Gemini CLI へのログインに使用するのと同じ OAuth 認証情報を使用するように設定することもできます。これは、ADC がセットアップされていない環境で役立ちます。
 
-To enable this, set the `useCliAuth` property in your `telemetry` settings to
-`true`:
+これを有効にするには、`telemetry` 設定の `useCliAuth` プロパティを `true` に設定します：
 
 ```json
 {
@@ -151,19 +133,17 @@ To enable this, set the `useCliAuth` property in your `telemetry` settings to
 }
 ```
 
-**Important:**
+**重要:**
 
-- This setting requires the use of **Direct Export** (in-process exporters).
-- It **cannot** be used with `useCollector: true`. If you enable both, telemetry
-  will be disabled and an error will be logged.
-- The CLI will automatically use your credentials to authenticate with Google
-  Cloud Trace, Metrics, and Logging APIs.
+- この設定には **直接エクスポート**（プロセス内エクスポーター）の使用が必要です。
+- `useCollector: true` とは**併用できません**。両方を有効にすると、テレメトリは無効になり、エラーがログに記録されます。
+- CLI は自動的にあなたの認証情報を使用して、Google Cloud Trace、Metrics、Logging API で認証します。
 
-### Direct export (recommended)
+### 直接エクスポート（推奨）
 
-Sends telemetry directly to Google Cloud services. No collector needed.
+テレメトリを Google Cloud サービスに直接送信します。コレクターは不要です。
 
-1. Enable telemetry in your `.gemini/settings.json`:
+1. `.gemini/settings.json` でテレメトリを有効にする：
    ```json
    {
      "telemetry": {
@@ -172,19 +152,18 @@ Sends telemetry directly to Google Cloud services. No collector needed.
      }
    }
    ```
-2. Run Gemini CLI and send prompts.
-3. View logs and metrics:
-   - Open the Google Cloud Console in your browser after sending prompts:
-     - Logs: https://console.cloud.google.com/logs/
-     - Metrics: https://console.cloud.google.com/monitoring/metrics-explorer
-     - Traces: https://console.cloud.google.com/traces/list
+2. Gemini CLI を実行し、プロンプトを送信する。
+3. ログとメトリクスを表示する：
+   - プロンプト送信後、ブラウザで Google Cloud Console を開きます：
+     - ログ: https://console.cloud.google.com/logs/
+     - メトリクス: https://console.cloud.google.com/monitoring/metrics-explorer
+     - トレース: https://console.cloud.google.com/traces/list
 
-### Collector-based export (advanced)
+### コレクターベースのエクスポート（上級者向け）
 
-For custom processing, filtering, or routing, use an OpenTelemetry collector to
-forward data to Google Cloud.
+カスタム処理、フィルタリング、ルーティングを行う場合は、OpenTelemetry コレクターを使用してデータを Google Cloud に転送します。
 
-1. Configure your `.gemini/settings.json`:
+1. `.gemini/settings.json` を設定する：
    ```json
    {
      "telemetry": {
@@ -194,32 +173,31 @@ forward data to Google Cloud.
      }
    }
    ```
-2. Run the automation script:
+2. 自動化スクリプトを実行する：
    ```bash
    npm run telemetry -- --target=gcp
    ```
-   This will:
-   - Start a local OTEL collector that forwards to Google Cloud
-   - Configure your workspace
-   - Provide links to view traces, metrics, and logs in Google Cloud Console
-   - Save collector logs to `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log`
-   - Stop collector on exit (e.g. `Ctrl+C`)
-3. Run Gemini CLI and send prompts.
-4. View logs and metrics:
-   - Open the Google Cloud Console in your browser after sending prompts:
-     - Logs: https://console.cloud.google.com/logs/
-     - Metrics: https://console.cloud.google.com/monitoring/metrics-explorer
-     - Traces: https://console.cloud.google.com/traces/list
-   - Open `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log` to view local
-     collector logs.
+   これにより以下が実行されます：
+   - Google Cloud に転送するローカル OTEL コレクターを開始
+   - ワークスペースを設定
+   - Google Cloud Console でトレース、メトリクス、ログを表示するためのリンクを提供
+   - コレクターログを `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log` に保存
+   - 終了時にコレクターを停止（例: `Ctrl+C`）
+3. Gemini CLI を実行し、プロンプトを送信する。
+4. ログとメトリクスを表示する：
+   - プロンプト送信後、ブラウザで Google Cloud Console を開きます：
+     - ログ: https://console.cloud.google.com/logs/
+     - メトリクス: https://console.cloud.google.com/monitoring/metrics-explorer
+     - トレース: https://console.cloud.google.com/traces/list
+   - `~/.gemini/tmp/<projectHash>/otel/collector-gcp.log` を開いてローカルコレクターのログを表示します。
 
-## Local telemetry
+## ローカルテレメトリ
 
-For local development and debugging, you can capture telemetry data locally:
+ローカル開発やデバッグのために、テレメトリデータをローカルでキャプチャできます：
 
-### File-based output (recommended)
+### ファイルベースの出力（推奨）
 
-1. Enable telemetry in your `.gemini/settings.json`:
+1. `.gemini/settings.json` でテレメトリを有効にする：
    ```json
    {
      "telemetry": {
@@ -230,562 +208,527 @@ For local development and debugging, you can capture telemetry data locally:
      }
    }
    ```
-2. Run Gemini CLI and send prompts.
-3. View logs and metrics in the specified file (e.g., `.gemini/telemetry.log`).
+2. Gemini CLI を実行し、プロンプトを送信する。
+3. 指定されたファイル（例: `.gemini/telemetry.log`）でログとメトリクスを表示する。
 
-### Collector-based export (advanced)
+### コレクターベースのエクスポート（上級者向け）
 
-1. Run the automation script:
+1. 自動化スクリプトを実行する：
    ```bash
    npm run telemetry -- --target=local
    ```
-   This will:
-   - Download and start Jaeger and OTEL collector
-   - Configure your workspace for local telemetry
-   - Provide a Jaeger UI at http://localhost:16686
-   - Save logs/metrics to `~/.gemini/tmp/<projectHash>/otel/collector.log`
-   - Stop collector on exit (e.g. `Ctrl+C`)
-2. Run Gemini CLI and send prompts.
-3. View traces at http://localhost:16686 and logs/metrics in the collector log
-   file.
+   これにより以下が実行されます：
+   - Jaeger と OTEL コレクターをダウンロードして開始
+   - ローカルテレメトリ用にワークスペースを設定
+   - http://localhost:16686 で Jaeger UI を提供
+   - ログ/メトリクスを `~/.gemini/tmp/<projectHash>/otel/collector.log` に保存
+   - 終了時にコレクターを停止（例: `Ctrl+C`）
+2. Gemini CLI を実行し、プロンプトを送信する。
+3. http://localhost:16686 でトレースを表示し、コレクターログファイルでログ/メトリクスを表示する。
 
-## Logs and metrics
+## ログとメトリクス
 
-The following section describes the structure of logs and metrics generated for
-Gemini CLI.
+以下のセクションでは、Gemini CLI で生成されるログとメトリクスの構造について説明します。
 
-The `session.id`, `installation.id`, and `user.email` (available only when
-authenticated with a Google account) are included as common attributes on all
-logs and metrics.
+`session.id`, `installation.id`, `user.email`（Google アカウントで認証されている場合のみ利用可能）は、すべてのログとメトリクスに共通の属性として含まれます。
 
-### Logs
+### ログ
 
-Logs are timestamped records of specific events. The following events are logged
-for Gemini CLI, grouped by category.
+ログは特定のイベントのタイムスタンプ付き記録です。Gemini CLI では以下のイベントがカテゴリ別にログに記録されます。
 
-#### Sessions
+#### セッション
 
-Captures startup configuration and user prompt submissions.
+起動時の設定とユーザープロンプトの送信をキャプチャします。
 
-- `gemini_cli.config`: Emitted once at startup with the CLI configuration.
-  - **Attributes**:
-    - `model` (string)
-    - `embedding_model` (string)
-    - `sandbox_enabled` (boolean)
-    - `core_tools_enabled` (string)
-    - `approval_mode` (string)
-    - `api_key_enabled` (boolean)
-    - `vertex_ai_enabled` (boolean)
-    - `log_user_prompts_enabled` (boolean)
-    - `file_filtering_respect_git_ignore` (boolean)
-    - `debug_mode` (boolean)
-    - `mcp_servers` (string)
-    - `mcp_servers_count` (int)
-    - `extensions` (string)
-    - `extension_ids` (string)
-    - `extension_count` (int)
-    - `mcp_tools` (string, if applicable)
-    - `mcp_tools_count` (int, if applicable)
-    - `output_format` ("text", "json", or "stream-json")
+- `gemini_cli.config`: 起動時に一度、CLI 設定とともに出力されます。
+  - **属性**:
+    - `model` (文字列)
+    - `embedding_model` (文字列)
+    - `sandbox_enabled` (ブール値)
+    - `core_tools_enabled` (文字列)
+    - `approval_mode` (文字列)
+    - `api_key_enabled` (ブール値)
+    - `vertex_ai_enabled` (ブール値)
+    - `log_user_prompts_enabled` (ブール値)
+    - `file_filtering_respect_git_ignore` (ブール値)
+    - `debug_mode` (ブール値)
+    - `mcp_servers` (文字列)
+    - `mcp_servers_count` (整数)
+    - `extensions` (文字列)
+    - `extension_ids` (文字列)
+    - `extension_count` (整数)
+    - `mcp_tools` (文字列, 該当する場合)
+    - `mcp_tools_count` (整数, 該当する場合)
+    - `output_format` ("text", "json", "stream-json")
 
-- `gemini_cli.user_prompt`: Emitted when a user submits a prompt.
-  - **Attributes**:
-    - `prompt_length` (int)
-    - `prompt_id` (string)
-    - `prompt` (string; excluded if `telemetry.logPrompts` is `false`)
-    - `auth_type` (string)
+- `gemini_cli.user_prompt`: ユーザーがプロンプトを送信したときに出力されます。
+  - **属性**:
+    - `prompt_length` (整数)
+    - `prompt_id` (文字列)
+    - `prompt` (文字列; `telemetry.logPrompts` が `false` の場合は除外)
+    - `auth_type` (文字列)
 
-#### Tools
+#### ツール
 
-Captures tool executions, output truncation, and Smart Edit behavior.
+ツールの実行、出力の切り捨て、スマート編集の動作をキャプチャします。
 
-- `gemini_cli.tool_call`: Emitted for each tool (function) call.
-  - **Attributes**:
+- `gemini_cli.tool_call`: 各ツール（関数）呼び出しごとに出力されます。
+  - **属性**:
     - `function_name`
     - `function_args`
     - `duration_ms`
-    - `success` (boolean)
-    - `decision` ("accept", "reject", "auto_accept", or "modify", if applicable)
-    - `error` (if applicable)
-    - `error_type` (if applicable)
-    - `prompt_id` (string)
-    - `tool_type` ("native" or "mcp")
-    - `mcp_server_name` (string, if applicable)
-    - `extension_name` (string, if applicable)
-    - `extension_id` (string, if applicable)
-    - `content_length` (int, if applicable)
-    - `metadata` (if applicable)
+    - `success` (ブール値)
+    - `decision` ("accept", "reject", "auto_accept", "modify", 該当する場合)
+    - `error` (該当する場合)
+    - `error_type` (該当する場合)
+    - `prompt_id` (文字列)
+    - `tool_type` ("native" または "mcp")
+    - `mcp_server_name` (文字列, 該当する場合)
+    - `extension_name` (文字列, 該当する場合)
+    - `extension_id` (文字列, 該当する場合)
+    - `content_length` (整数, 該当する場合)
+    - `metadata` (該当する場合)
 
-- `gemini_cli.tool_output_truncated`: Output of a tool call was truncated.
-  - **Attributes**:
-    - `tool_name` (string)
-    - `original_content_length` (int)
-    - `truncated_content_length` (int)
-    - `threshold` (int)
-    - `lines` (int)
-    - `prompt_id` (string)
+- `gemini_cli.tool_output_truncated`: ツール呼び出しの出力が切り捨てられました。
+  - **属性**:
+    - `tool_name` (文字列)
+    - `original_content_length` (整数)
+    - `truncated_content_length` (整数)
+    - `threshold` (整数)
+    - `lines` (整数)
+    - `prompt_id` (文字列)
 
-- `gemini_cli.smart_edit_strategy`: Smart Edit strategy chosen.
-  - **Attributes**:
-    - `strategy` (string)
+- `gemini_cli.smart_edit_strategy`: スマート編集戦略が選択されました。
+  - **属性**:
+    - `strategy` (文字列)
 
-- `gemini_cli.smart_edit_correction`: Smart Edit correction result.
-  - **Attributes**:
+- `gemini_cli.smart_edit_correction`: スマート編集の修正結果。
+  - **属性**:
     - `correction` ("success" | "failure")
 
-- `gen_ai.client.inference.operation.details`: This event provides detailed
-  information about the GenAI operation, aligned with [OpenTelemetry GenAI
-  semantic conventions for events].
-  - **Attributes**:
-    - `gen_ai.request.model` (string)
-    - `gen_ai.provider.name` (string)
-    - `gen_ai.operation.name` (string)
-    - `gen_ai.input.messages` (json string)
-    - `gen_ai.output.messages` (json string)
-    - `gen_ai.response.finish_reasons` (array of strings)
-    - `gen_ai.usage.input_tokens` (int)
-    - `gen_ai.usage.output_tokens` (int)
-    - `gen_ai.request.temperature` (float)
-    - `gen_ai.request.top_p` (float)
-    - `gen_ai.request.top_k` (int)
-    - `gen_ai.request.max_tokens` (int)
-    - `gen_ai.system_instructions` (json string)
-    - `server.address` (string)
-    - `server.port` (int)
+- `gen_ai.client.inference.operation.details`: このイベントは、[イベントに関する OpenTelemetry GenAI セマンティック規約]に準拠した、GenAI 操作に関する詳細情報を提供します。
+  - **属性**:
+    - `gen_ai.request.model` (文字列)
+    - `gen_ai.provider.name` (文字列)
+    - `gen_ai.operation.name` (文字列)
+    - `gen_ai.input.messages` (json 文字列)
+    - `gen_ai.output.messages` (json 文字列)
+    - `gen_ai.response.finish_reasons` (文字列の配列)
+    - `gen_ai.usage.input_tokens` (整数)
+    - `gen_ai.usage.output_tokens` (整数)
+    - `gen_ai.request.temperature` (浮動小数点数)
+    - `gen_ai.request.top_p` (浮動小数点数)
+    - `gen_ai.request.top_k` (整数)
+    - `gen_ai.request.max_tokens` (整数)
+    - `gen_ai.system_instructions` (json 文字列)
+    - `server.address` (文字列)
+    - `server.port` (整数)
 
-#### Files
+#### ファイル
 
-Tracks file operations performed by tools.
+ツールによって実行されたファイル操作を追跡します。
 
-- `gemini_cli.file_operation`: Emitted for each file operation.
-  - **Attributes**:
-    - `tool_name` (string)
+- `gemini_cli.file_operation`: 各ファイル操作ごとに出力されます。
+  - **属性**:
+    - `tool_name` (文字列)
     - `operation` ("create" | "read" | "update")
-    - `lines` (int, optional)
-    - `mimetype` (string, optional)
-    - `extension` (string, optional)
-    - `programming_language` (string, optional)
+    - `lines` (整数, オプション)
+    - `mimetype` (文字列, オプション)
+    - `extension` (文字列, オプション)
+    - `programming_language` (文字列, オプション)
 
 #### API
 
-Captures Gemini API requests, responses, and errors.
+Gemini API のリクエスト、レスポンス、エラーをキャプチャします。
 
-- `gemini_cli.api_request`: Request sent to Gemini API.
-  - **Attributes**:
-    - `model` (string)
-    - `prompt_id` (string)
-    - `request_text` (string, optional)
+- `gemini_cli.api_request`: Gemini API に送信されたリクエスト。
+  - **属性**:
+    - `model` (文字列)
+    - `prompt_id` (文字列)
+    - `request_text` (文字列, オプション)
 
-- `gemini_cli.api_response`: Response received from Gemini API.
-  - **Attributes**:
-    - `model` (string)
-    - `status_code` (int|string)
-    - `duration_ms` (int)
-    - `input_token_count` (int)
-    - `output_token_count` (int)
-    - `cached_content_token_count` (int)
-    - `thoughts_token_count` (int)
-    - `tool_token_count` (int)
-    - `total_token_count` (int)
-    - `response_text` (string, optional)
-    - `prompt_id` (string)
-    - `auth_type` (string)
-    - `finish_reasons` (array of strings)
+- `gemini_cli.api_response`: Gemini API から受信したレスポンス。
+  - **属性**:
+    - `model` (文字列)
+    - `status_code` (整数|文字列)
+    - `duration_ms` (整数)
+    - `input_token_count` (整数)
+    - `output_token_count` (整数)
+    - `cached_content_token_count` (整数)
+    - `thoughts_token_count` (整数)
+    - `tool_token_count` (整数)
+    - `total_token_count` (整数)
+    - `response_text` (文字列, オプション)
+    - `prompt_id` (文字列)
+    - `auth_type` (文字列)
+    - `finish_reasons` (文字列の配列)
 
-- `gemini_cli.api_error`: API request failed.
-  - **Attributes**:
-    - `model` (string)
-    - `error` (string)
-    - `error_type` (string)
-    - `status_code` (int|string)
-    - `duration_ms` (int)
-    - `prompt_id` (string)
-    - `auth_type` (string)
+- `gemini_cli.api_error`: API リクエストが失敗しました。
+  - **属性**:
+    - `model` (文字列)
+    - `error` (文字列)
+    - `error_type` (文字列)
+    - `status_code` (整数|文字列)
+    - `duration_ms` (整数)
+    - `prompt_id` (文字列)
+    - `auth_type` (文字列)
 
-- `gemini_cli.malformed_json_response`: `generateJson` response could not be
-  parsed.
-  - **Attributes**:
-    - `model` (string)
+- `gemini_cli.malformed_json_response`: `generateJson` レスポンスを解析できませんでした。
+  - **属性**:
+    - `model` (文字列)
 
-#### Model routing
+#### モデルルーティング
 
-- `gemini_cli.slash_command`: A slash command was executed.
-  - **Attributes**:
-    - `command` (string)
-    - `subcommand` (string, optional)
+- `gemini_cli.slash_command`: スラッシュコマンドが実行されました。
+  - **属性**:
+    - `command` (文字列)
+    - `subcommand` (文字列, オプション)
     - `status` ("success" | "error")
 
-- `gemini_cli.slash_command.model`: Model was selected via slash command.
-  - **Attributes**:
-    - `model_name` (string)
+- `gemini_cli.slash_command.model`: スラッシュコマンドによってモデルが選択されました。
+  - **属性**:
+    - `model_name` (文字列)
 
-- `gemini_cli.model_routing`: Model router made a decision.
-  - **Attributes**:
-    - `decision_model` (string)
-    - `decision_source` (string)
-    - `routing_latency_ms` (int)
-    - `reasoning` (string, optional)
-    - `failed` (boolean)
-    - `error_message` (string, optional)
+- `gemini_cli.model_routing`: モデルルーターが決定を行いました。
+  - **属性**:
+    - `decision_model` (文字列)
+    - `decision_source` (文字列)
+    - `routing_latency_ms` (整数)
+    - `reasoning` (文字列, オプション)
+    - `failed` (ブール値)
+    - `error_message` (文字列, オプション)
 
-#### Chat and streaming
+#### チャットとストリーミング
 
-- `gemini_cli.chat_compression`: Chat context was compressed.
-  - **Attributes**:
-    - `tokens_before` (int)
-    - `tokens_after` (int)
+- `gemini_cli.chat_compression`: チャットコンテキストが圧縮されました。
+  - **属性**:
+    - `tokens_before` (整数)
+    - `tokens_after` (整数)
 
-- `gemini_cli.chat.invalid_chunk`: Invalid chunk received from a stream.
-  - **Attributes**:
-    - `error.message` (string, optional)
+- `gemini_cli.chat.invalid_chunk`: ストリームから無効なチャンクを受信しました。
+  - **属性**:
+    - `error.message` (文字列, オプション)
 
-- `gemini_cli.chat.content_retry`: Retry triggered due to a content error.
-  - **Attributes**:
-    - `attempt_number` (int)
-    - `error_type` (string)
-    - `retry_delay_ms` (int)
-    - `model` (string)
+- `gemini_cli.chat.content_retry`: コンテンツエラーにより再試行がトリガーされました。
+  - **属性**:
+    - `attempt_number` (整数)
+    - `error_type` (文字列)
+    - `retry_delay_ms` (整数)
+    - `model` (文字列)
 
-- `gemini_cli.chat.content_retry_failure`: All content retries failed.
-  - **Attributes**:
-    - `total_attempts` (int)
-    - `final_error_type` (string)
-    - `total_duration_ms` (int, optional)
-    - `model` (string)
+- `gemini_cli.chat.content_retry_failure`: すべてのコンテンツ再試行が失敗しました。
+  - **属性**:
+    - `total_attempts` (整数)
+    - `final_error_type` (文字列)
+    - `total_duration_ms` (整数, オプション)
+    - `model` (文字列)
 
-- `gemini_cli.conversation_finished`: Conversation session ended.
-  - **Attributes**:
-    - `approvalMode` (string)
-    - `turnCount` (int)
+- `gemini_cli.conversation_finished`: 会話セッションが終了しました。
+  - **属性**:
+    - `approvalMode` (文字列)
+    - `turnCount` (整数)
 
-- `gemini_cli.next_speaker_check`: Next speaker determination.
-  - **Attributes**:
-    - `prompt_id` (string)
-    - `finish_reason` (string)
-    - `result` (string)
+- `gemini_cli.next_speaker_check`: 次の話者の決定。
+  - **属性**:
+    - `prompt_id` (文字列)
+    - `finish_reason` (文字列)
+    - `result` (文字列)
 
-#### Resilience
+#### 回復力 (Resilience)
 
-Records fallback mechanisms for models and network operations.
+モデルおよびネットワーク操作のフォールバックメカニズムを記録します。
 
-- `gemini_cli.flash_fallback`: Switched to a flash model as fallback.
-  - **Attributes**:
-    - `auth_type` (string)
+- `gemini_cli.flash_fallback`: フォールバックとして Flash モデルに切り替えました。
+  - **属性**:
+    - `auth_type` (文字列)
 
-- `gemini_cli.ripgrep_fallback`: Switched to grep as fallback for file search.
-  - **Attributes**:
-    - `error` (string, optional)
+- `gemini_cli.ripgrep_fallback`: ファイル検索のフォールバックとして grep に切り替えました。
+  - **属性**:
+    - `error` (文字列, オプション)
 
-- `gemini_cli.web_fetch_fallback_attempt`: Attempted web-fetch fallback.
-  - **Attributes**:
+- `gemini_cli.web_fetch_fallback_attempt`: Web フェッチのフォールバックを試みました。
+  - **属性**:
     - `reason` ("private_ip" | "primary_failed")
 
-#### Extensions
+#### 拡張機能
 
-Tracks extension lifecycle and settings changes.
+拡張機能のライフサイクルと設定の変更を追跡します。
 
-- `gemini_cli.extension_install`: An extension was installed.
-  - **Attributes**:
-    - `extension_name` (string)
-    - `extension_version` (string)
-    - `extension_source` (string)
-    - `status` (string)
+- `gemini_cli.extension_install`: 拡張機能がインストールされました。
+  - **属性**:
+    - `extension_name` (文字列)
+    - `extension_version` (文字列)
+    - `extension_source` (文字列)
+    - `status` (文字列)
 
-- `gemini_cli.extension_uninstall`: An extension was uninstalled.
-  - **Attributes**:
-    - `extension_name` (string)
-    - `status` (string)
+- `gemini_cli.extension_uninstall`: 拡張機能がアンインストールされました。
+  - **属性**:
+    - `extension_name` (文字列)
+    - `status` (文字列)
 
-- `gemini_cli.extension_enable`: An extension was enabled.
-  - **Attributes**:
-    - `extension_name` (string)
-    - `setting_scope` (string)
+- `gemini_cli.extension_enable`: 拡張機能が有効になりました。
+  - **属性**:
+    - `extension_name` (文字列)
+    - `setting_scope` (文字列)
 
-- `gemini_cli.extension_disable`: An extension was disabled.
-  - **Attributes**:
-    - `extension_name` (string)
-    - `setting_scope` (string)
+- `gemini_cli.extension_disable`: 拡張機能が無効になりました。
+  - **属性**:
+    - `extension_name` (文字列)
+    - `setting_scope` (文字列)
 
-- `gemini_cli.extension_update`: An extension was updated.
-  - **Attributes**:
-    - `extension_name` (string)
-    - `extension_version` (string)
-    - `extension_previous_version` (string)
-    - `extension_source` (string)
-    - `status` (string)
+- `gemini_cli.extension_update`: 拡張機能が更新されました。
+  - **属性**:
+    - `extension_name` (文字列)
+    - `extension_version` (文字列)
+    - `extension_previous_version` (文字列)
+    - `extension_source` (文字列)
+    - `status` (文字列)
 
-#### Agent runs
+#### エージェント実行
 
-- `gemini_cli.agent.start`: Agent run started.
-  - **Attributes**:
-    - `agent_id` (string)
-    - `agent_name` (string)
+- `gemini_cli.agent.start`: エージェントの実行が開始されました。
+  - **属性**:
+    - `agent_id` (文字列)
+    - `agent_name` (文字列)
 
-- `gemini_cli.agent.finish`: Agent run finished.
-  - **Attributes**:
-    - `agent_id` (string)
-    - `agent_name` (string)
-    - `duration_ms` (int)
-    - `turn_count` (int)
-    - `terminate_reason` (string)
+- `gemini_cli.agent.finish`: エージェントの実行が終了しました。
+  - **属性**:
+    - `agent_id` (文字列)
+    - `agent_name` (文字列)
+    - `duration_ms` (整数)
+    - `turn_count` (整数)
+    - `terminate_reason` (文字列)
 
 #### IDE
 
-Captures IDE connectivity and conversation lifecycle events.
+IDE コンパニオン接続と会話ライフサイクルイベントをキャプチャします。
 
-- `gemini_cli.ide_connection`: IDE companion connection.
-  - **Attributes**:
-    - `connection_type` (string)
+- `gemini_cli.ide_connection`: IDE コンパニオン接続。
+  - **属性**:
+    - `connection_type` (文字列)
 
 #### UI
 
-Tracks terminal rendering issues and related signals.
+ターミナルレンダリングの問題と関連シグナルを追跡します。
 
-- `kitty_sequence_overflow`: Terminal kitty control sequence overflow.
-  - **Attributes**:
-    - `sequence_length` (int)
-    - `truncated_sequence` (string)
+- `kitty_sequence_overflow`: ターミナルの kitty 制御シーケンスオーバーフロー。
+  - **属性**:
+    - `sequence_length` (整数)
+    - `truncated_sequence` (文字列)
 
-### Metrics
+### メトリクス
 
-Metrics are numerical measurements of behavior over time.
+メトリクスは、時間の経過に伴う動作の数値的な測定値です。
 
-#### Custom
+#### カスタム
 
-##### Sessions
+##### セッション
 
-Counts CLI sessions at startup.
+起動時の CLI セッションをカウントします。
 
-- `gemini_cli.session.count` (Counter, Int): Incremented once per CLI startup.
+- `gemini_cli.session.count` (カウンター, 整数): CLI 起動ごとに1回インクリメントされます。
 
-##### Tools
+##### ツール
 
-Measures tool usage and latency.
+ツールの使用とレイテンシを測定します。
 
-- `gemini_cli.tool.call.count` (Counter, Int): Counts tool calls.
-  - **Attributes**:
+- `gemini_cli.tool.call.count` (カウンター, 整数): ツール呼び出しをカウントします。
+  - **属性**:
     - `function_name`
-    - `success` (boolean)
-    - `decision` (string: "accept", "reject", "modify", or "auto_accept", if
-      applicable)
-    - `tool_type` (string: "mcp" or "native", if applicable)
+    - `success` (ブール値)
+    - `decision` (文字列: "accept", "reject", "modify", "auto_accept", 該当する場合)
+    - `tool_type` (文字列: "mcp" または "native", 該当する場合)
 
-- `gemini_cli.tool.call.latency` (Histogram, ms): Measures tool call latency.
-  - **Attributes**:
+- `gemini_cli.tool.call.latency` (ヒストグラム, ミリ秒): ツール呼び出しのレイテンシを測定します。
+  - **属性**:
     - `function_name`
 
 ##### API
 
-Tracks API request volume and latency.
+API リクエスト量とレイテンシを追跡します。
 
-- `gemini_cli.api.request.count` (Counter, Int): Counts all API requests.
-  - **Attributes**:
+- `gemini_cli.api.request.count` (カウンター, 整数): すべての API リクエストをカウントします。
+  - **属性**:
     - `model`
     - `status_code`
-    - `error_type` (if applicable)
+    - `error_type` (該当する場合)
 
-- `gemini_cli.api.request.latency` (Histogram, ms): Measures API request
-  latency.
-  - **Attributes**:
+- `gemini_cli.api.request.latency` (ヒストグラム, ミリ秒): API リクエストのレイテンシを測定します。
+  - **属性**:
     - `model`
-  - Note: Overlaps with `gen_ai.client.operation.duration` (GenAI conventions).
+  - 注: `gen_ai.client.operation.duration` (GenAI 規約) と重複します。
 
-##### Token usage
+##### トークン使用量
 
-Tracks tokens used by model and type.
+モデルおよびタイプ別の使用トークンを追跡します。
 
-- `gemini_cli.token.usage` (Counter, Int): Counts tokens used.
-  - **Attributes**:
+- `gemini_cli.token.usage` (カウンター, 整数): 使用されたトークンをカウントします。
+  - **属性**:
     - `model`
-    - `type` ("input", "output", "thought", "cache", or "tool")
-  - Note: Overlaps with `gen_ai.client.token.usage` for `input`/`output`.
+    - `type` ("input", "output", "thought", "cache", "tool")
+  - 注: `input`/`output` については `gen_ai.client.token.usage` と重複します。
 
-##### Files
+##### ファイル
 
-Counts file operations with basic context.
+基本的なコンテキストを含むファイル操作をカウントします。
 
-- `gemini_cli.file.operation.count` (Counter, Int): Counts file operations.
-  - **Attributes**:
+- `gemini_cli.file.operation.count` (カウンター, 整数): ファイル操作をカウントします。
+  - **属性**:
     - `operation` ("create", "read", "update")
-    - `lines` (Int, optional)
-    - `mimetype` (string, optional)
-    - `extension` (string, optional)
-    - `programming_language` (string, optional)
+    - `lines` (整数, オプション)
+    - `mimetype` (文字列, オプション)
+    - `extension` (文字列, オプション)
+    - `programming_language` (文字列, オプション)
 
-- `gemini_cli.lines.changed` (Counter, Int): Number of lines changed (from file
-  diffs).
-  - **Attributes**:
+- `gemini_cli.lines.changed` (カウンター, 整数): 変更された行数（ファイルの差分から）。
+  - **属性**:
     - `function_name`
-    - `type` ("added" or "removed")
+    - `type` ("added" または "removed")
 
-##### Chat and streaming
+##### チャットとストリーミング
 
-Resilience counters for compression, invalid chunks, and retries.
+圧縮、無効なチャンク、再試行のための回復力カウンター。
 
-- `gemini_cli.chat_compression` (Counter, Int): Counts chat compression
-  operations.
-  - **Attributes**:
-    - `tokens_before` (Int)
-    - `tokens_after` (Int)
+- `gemini_cli.chat_compression` (カウンター, 整数): チャット圧縮操作をカウントします。
+  - **属性**:
+    - `tokens_before` (整数)
+    - `tokens_after` (整数)
 
-- `gemini_cli.chat.invalid_chunk.count` (Counter, Int): Counts invalid chunks
-  from streams.
+- `gemini_cli.chat.invalid_chunk.count` (カウンター, 整数): ストリームからの無効なチャンクをカウントします。
 
-- `gemini_cli.chat.content_retry.count` (Counter, Int): Counts retries due to
-  content errors.
+- `gemini_cli.chat.content_retry.count` (カウンター, 整数): コンテンツエラーによる再試行をカウントします。
 
-- `gemini_cli.chat.content_retry_failure.count` (Counter, Int): Counts requests
-  where all content retries failed.
+- `gemini_cli.chat.content_retry_failure.count` (カウンター, 整数): すべてのコンテンツ再試行が失敗したリクエストをカウントします。
 
-##### Model routing
+##### モデルルーティング
 
-Routing latency/failures and slash-command selections.
+ルーティングのレイテンシ/失敗とスラッシュコマンドによる選択。
 
-- `gemini_cli.slash_command.model.call_count` (Counter, Int): Counts model
-  selections via slash command.
-  - **Attributes**:
-    - `slash_command.model.model_name` (string)
+- `gemini_cli.slash_command.model.call_count` (カウンター, 整数): スラッシュコマンドによるモデル選択をカウントします。
+  - **属性**:
+    - `slash_command.model.model_name` (文字列)
 
-- `gemini_cli.model_routing.latency` (Histogram, ms): Model routing decision
-  latency.
-  - **Attributes**:
-    - `routing.decision_model` (string)
-    - `routing.decision_source` (string)
+- `gemini_cli.model_routing.latency` (ヒストグラム, ミリ秒): モデルルーティングの決定レイテンシ。
+  - **属性**:
+    - `routing.decision_model` (文字列)
+    - `routing.decision_source` (文字列)
 
-- `gemini_cli.model_routing.failure.count` (Counter, Int): Counts model routing
-  failures.
-  - **Attributes**:
-    - `routing.decision_source` (string)
-    - `routing.error_message` (string)
+- `gemini_cli.model_routing.failure.count` (カウンター, 整数): モデルルーティングの失敗をカウントします。
+  - **属性**:
+    - `routing.decision_source` (文字列)
+    - `routing.error_message` (文字列)
 
-##### Agent runs
+##### エージェント実行
 
-Agent lifecycle metrics: runs, durations, and turns.
+エージェントのライフサイクルメトリクス：実行回数、期間、ターン数。
 
-- `gemini_cli.agent.run.count` (Counter, Int): Counts agent runs.
-  - **Attributes**:
-    - `agent_name` (string)
-    - `terminate_reason` (string)
+- `gemini_cli.agent.run.count` (カウンター, 整数): エージェントの実行をカウントします。
+  - **属性**:
+    - `agent_name` (文字列)
+    - `terminate_reason` (文字列)
 
-- `gemini_cli.agent.duration` (Histogram, ms): Agent run durations.
-  - **Attributes**:
-    - `agent_name` (string)
+- `gemini_cli.agent.duration` (ヒストグラム, ミリ秒): エージェントの実行期間。
+  - **属性**:
+    - `agent_name` (文字列)
 
-- `gemini_cli.agent.turns` (Histogram, turns): Turns taken per agent run.
-  - **Attributes**:
-    - `agent_name` (string)
+- `gemini_cli.agent.turns` (ヒストグラム, ターン): エージェント実行ごとのターン数。
+  - **属性**:
+    - `agent_name` (文字列)
 
 ##### UI
 
-UI stability signals such as flicker count.
+フリッカー数などの UI 安定性シグナル。
 
-- `gemini_cli.ui.flicker.count` (Counter, Int): Counts UI frames that flicker
-  (render taller than terminal).
+- `gemini_cli.ui.flicker.count` (カウンター, 整数): フリッカー（ターミナルよりも高くレンダリングされた）した UI フレームをカウントします。
 
-##### Performance
+##### パフォーマンス
 
-Optional performance monitoring for startup, CPU/memory, and phase timing.
+起動、CPU/メモリ、フェーズタイミングのためのオプションのパフォーマンス監視。
 
-- `gemini_cli.startup.duration` (Histogram, ms): CLI startup time by phase.
-  - **Attributes**:
-    - `phase` (string)
-    - `details` (map, optional)
+- `gemini_cli.startup.duration` (ヒストグラム, ミリ秒): フェーズ別の CLI 起動時間。
+  - **属性**:
+    - `phase` (文字列)
+    - `details` (マップ, オプション)
 
-- `gemini_cli.memory.usage` (Histogram, bytes): Memory usage.
-  - **Attributes**:
+- `gemini_cli.memory.usage` (ヒストグラム, バイト): メモリ使用量。
+  - **属性**:
     - `memory_type` ("heap_used", "heap_total", "external", "rss")
-    - `component` (string, optional)
+    - `component` (文字列, オプション)
 
-- `gemini_cli.cpu.usage` (Histogram, percent): CPU usage percentage.
-  - **Attributes**:
-    - `component` (string, optional)
+- `gemini_cli.cpu.usage` (ヒストグラム, パーセント): CPU 使用率（パーセント）。
+  - **属性**:
+    - `component` (文字列, オプション)
 
-- `gemini_cli.tool.queue.depth` (Histogram, count): Number of tools in the
-  execution queue.
+- `gemini_cli.tool.queue.depth` (ヒストグラム, カウント): 実行キュー内のツール数。
 
-- `gemini_cli.tool.execution.breakdown` (Histogram, ms): Tool time by phase.
-  - **Attributes**:
-    - `function_name` (string)
+- `gemini_cli.tool.execution.breakdown` (ヒストグラム, ミリ秒): フェーズ別のツール時間。
+  - **属性**:
+    - `function_name` (文字列)
     - `phase` ("validation", "preparation", "execution", "result_processing")
 
-- `gemini_cli.api.request.breakdown` (Histogram, ms): API request time by phase.
-  - **Attributes**:
-    - `model` (string)
+- `gemini_cli.api.request.breakdown` (ヒストグラム, ミリ秒): フェーズ別の API リクエスト時間。
+  - **属性**:
+    - `model` (文字列)
     - `phase` ("request_preparation", "network_latency", "response_processing",
       "token_processing")
 
-- `gemini_cli.token.efficiency` (Histogram, ratio): Token efficiency metrics.
-  - **Attributes**:
-    - `model` (string)
-    - `metric` (string)
-    - `context` (string, optional)
+- `gemini_cli.token.efficiency` (ヒストグラム, 比率): トークン効率メトリクス。
+  - **属性**:
+    - `model` (文字列)
+    - `metric` (文字列)
+    - `context` (文字列, オプション)
 
-- `gemini_cli.performance.score` (Histogram, score): Composite performance
-  score.
-  - **Attributes**:
-    - `category` (string)
-    - `baseline` (number, optional)
+- `gemini_cli.performance.score` (ヒストグラム, スコア): 複合パフォーマンススコア。
+  - **属性**:
+    - `category` (文字列)
+    - `baseline` (数値, オプション)
 
-- `gemini_cli.performance.regression` (Counter, Int): Regression detection
-  events.
-  - **Attributes**:
-    - `metric` (string)
+- `gemini_cli.performance.regression` (カウンター, 整数): 回帰検出イベント。
+  - **属性**:
+    - `metric` (文字列)
     - `severity` ("low", "medium", "high")
-    - `current_value` (number)
-    - `baseline_value` (number)
+    - `current_value` (数値)
+    - `baseline_value` (数値)
 
-- `gemini_cli.performance.regression.percentage_change` (Histogram, percent):
-  Percent change from baseline when regression detected.
-  - **Attributes**:
-    - `metric` (string)
+- `gemini_cli.performance.regression.percentage_change` (ヒストグラム, パーセント): 回帰が検出されたときのベースラインからの変化率。
+  - **属性**:
+    - `metric` (文字列)
     - `severity` ("low", "medium", "high")
-    - `current_value` (number)
-    - `baseline_value` (number)
+    - `current_value` (数値)
+    - `baseline_value` (数値)
 
-- `gemini_cli.performance.baseline.comparison` (Histogram, percent): Comparison
-  to baseline.
-  - **Attributes**:
-    - `metric` (string)
-    - `category` (string)
-    - `current_value` (number)
-    - `baseline_value` (number)
+- `gemini_cli.performance.baseline.comparison` (ヒストグラム, パーセント): ベースラインとの比較。
+  - **属性**:
+    - `metric` (文字列)
+    - `category` (文字列)
+    - `current_value` (数値)
+    - `baseline_value` (数値)
 
-#### GenAI semantic convention
+#### GenAI セマンティック規約
 
-The following metrics comply with [OpenTelemetry GenAI semantic conventions] for
-standardized observability across GenAI applications:
+以下のメトリクスは、GenAI アプリケーション全体での標準化された可観測性のための [OpenTelemetry GenAI セマンティック規約] に準拠しています：
 
-- `gen_ai.client.token.usage` (Histogram, token): Number of input and output
-  tokens used per operation.
-  - **Attributes**:
-    - `gen_ai.operation.name` (string): The operation type (e.g.,
-      "generate_content", "chat")
-    - `gen_ai.provider.name` (string): The GenAI provider ("gcp.gen_ai" or
-      "gcp.vertex_ai")
-    - `gen_ai.token.type` (string): The token type ("input" or "output")
-    - `gen_ai.request.model` (string, optional): The model name used for the
-      request
-    - `gen_ai.response.model` (string, optional): The model name that generated
-      the response
-    - `server.address` (string, optional): GenAI server address
-    - `server.port` (int, optional): GenAI server port
+- `gen_ai.client.token.usage` (ヒストグラム, トークン): 操作ごとに使用された入力および出力トークンの数。
+  - **属性**:
+    - `gen_ai.operation.name` (文字列): 操作タイプ（例: "generate_content", "chat"）
+    - `gen_ai.provider.name` (文字列): GenAI プロバイダー（"gcp.gen_ai" または "gcp.vertex_ai"）
+    - `gen_ai.token.type` (文字列): トークンタイプ（"input" または "output"）
+    - `gen_ai.request.model` (文字列, オプション): リクエストに使用されたモデル名
+    - `gen_ai.response.model` (文字列, オプション): レスポンスを生成したモデル名
+    - `server.address` (文字列, オプション): GenAI サーバーアドレス
+    - `server.port` (整数, オプション): GenAI サーバーポート
 
-- `gen_ai.client.operation.duration` (Histogram, s): GenAI operation duration in
-  seconds.
-  - **Attributes**:
-    - `gen_ai.operation.name` (string): The operation type (e.g.,
-      "generate_content", "chat")
-    - `gen_ai.provider.name` (string): The GenAI provider ("gcp.gen_ai" or
-      "gcp.vertex_ai")
-    - `gen_ai.request.model` (string, optional): The model name used for the
-      request
-    - `gen_ai.response.model` (string, optional): The model name that generated
-      the response
-    - `server.address` (string, optional): GenAI server address
-    - `server.port` (int, optional): GenAI server port
-    - `error.type` (string, optional): Error type if the operation failed
+- `gen_ai.client.operation.duration` (ヒストグラム, 秒): GenAI 操作期間（秒）。
+  - **属性**:
+    - `gen_ai.operation.name` (文字列): 操作タイプ（例: "generate_content", "chat"）
+    - `gen_ai.provider.name` (文字列): GenAI プロバイダー（"gcp.gen_ai" または "gcp.vertex_ai"）
+    - `gen_ai.request.model` (文字列, オプション): リクエストに使用されたモデル名
+    - `gen_ai.response.model` (文字列, オプション): レスポンスを生成したモデル名
+    - `server.address` (文字列, オプション): GenAI サーバーアドレス
+    - `server.port` (整数, オプション): GenAI サーバーポート
+    - `error.type` (文字列, オプション): 操作が失敗した場合のエラータイプ
 
-[OpenTelemetry GenAI semantic conventions]:
-  https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md
-[OpenTelemetry GenAI semantic conventions for events]:
+[イベントに関する OpenTelemetry GenAI セマンティック規約]:
   https://github.com/open-telemetry/semantic-conventions/blob/8b4f210f43136e57c1f6f47292eb6d38e3bf30bb/docs/gen-ai/gen-ai-events.md
+[OpenTelemetry GenAI セマンティック規約]:
+  https://github.com/open-telemetry/semantic-conventions/blob/main/docs/gen-ai/gen-ai-metrics.md

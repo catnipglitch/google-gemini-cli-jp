@@ -1,3 +1,3 @@
-# Authentication setup
+# 認証セットアップ
 
-See: [Getting Started - Authentication Setup](../get-started/authentication.md).
+参照: [スタートガイド - 認証セットアップ](../get-started/authentication.md)

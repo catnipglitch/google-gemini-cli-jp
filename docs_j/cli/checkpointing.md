@@ -1,50 +1,30 @@
-# Checkpointing
+# チェックポイント機能 (Checkpointing)
 
-The Gemini CLI includes a Checkpointing feature that automatically saves a
-snapshot of your project's state before any file modifications are made by
-AI-powered tools. This allows you to safely experiment with and apply code
-changes, knowing you can instantly revert back to the state before the tool was
-run.
+Gemini CLI には、AI ツールによってファイル変更が行われる前に、プロジェクトの状態のスナップショットを自動的に保存するチェックポイント機能が含まれています。これにより、ツールを実行する前の状態に即座に戻すことができるため、安全にコード変更を試したり適用したりできます。
 
-## How it works
+## 仕組み
 
-When you approve a tool that modifies the file system (like `write_file` or
-`replace`), the CLI automatically creates a "checkpoint." This checkpoint
-includes:
+ファイルシステムを変更するツール（`write_file` や `replace` など）を承認すると、CLI は自動的に「チェックポイント」を作成します。このチェックポイントには以下が含まれます：
 
-1.  **A Git snapshot:** A commit is made in a special, shadow Git repository
-    located in your home directory (`~/.gemini/history/<project_hash>`). This
-    snapshot captures the complete state of your project files at that moment.
-    It does **not** interfere with your own project's Git repository.
-2.  **Conversation history:** The entire conversation you've had with the agent
-    up to that point is saved.
-3.  **The tool call:** The specific tool call that was about to be executed is
-    also stored.
+1.  **Git スナップショット:** ホームディレクトリ（`~/.gemini/history/<project_hash>`）にある特別な「シャドウ Git リポジトリ」にコミットが作成されます。このスナップショットは、その時点でのプロジェクトファイルの完全な状態をキャプチャします。これは、あなた自身のプロジェクトの Git リポジトリには**干渉しません**。
+2.  **会話履歴:** その時点までのエージェントとのすべての会話が保存されます。
+3.  **ツール呼び出し:** 実行されようとしていた特定のツール呼び出しも保存されます。
 
-If you want to undo the change or simply go back, you can use the `/restore`
-command. Restoring a checkpoint will:
+変更を元に戻したい場合、または単に戻りたい場合は、`/restore` コマンドを使用できます。チェックポイントを復元すると、次のようになります：
 
-- Revert all files in your project to the state captured in the snapshot.
-- Restore the conversation history in the CLI.
-- Re-propose the original tool call, allowing you to run it again, modify it, or
-  simply ignore it.
+- プロジェクト内のすべてのファイルを、スナップショットにキャプチャされた状態に戻します。
+- CLI 内の会話履歴を復元します。
+- 元のツール呼び出しを再度提案し、再実行、修正、または無視できるようにします。
 
-All checkpoint data, including the Git snapshot and conversation history, is
-stored locally on your machine. The Git snapshot is stored in the shadow
-repository while the conversation history and tool calls are saved in a JSON
-file in your project's temporary directory, typically located at
-`~/.gemini/tmp/<project_hash>/checkpoints`.
+Git スナップショットや会話履歴を含むすべてのチェックポイントデータは、ローカルマシンに保存されます。Git スナップショットはシャドウリポジトリに保存され、会話履歴とツール呼び出しはプロジェクトの一時ディレクトリ（通常は `~/.gemini/tmp/<project_hash>/checkpoints`）にある JSON ファイルに保存されます。
 
-## Enabling the feature
+## 機能の有効化
 
-The Checkpointing feature is disabled by default. To enable it, you need to edit
-your `settings.json` file.
+チェックポイント機能はデフォルトで無効になっています。有効にするには、`settings.json` ファイルを編集する必要があります。
 
-> **Note:** The `--checkpointing` command-line flag was removed in version
-> 0.11.0. Checkpointing can now only be enabled through the `settings.json`
-> configuration file.
+> **注意:** `--checkpointing` コマンドラインフラグはバージョン 0.11.0 で削除されました。チェックポイント機能は、`settings.json` 設定ファイルを介してのみ有効にできるようになりました。
 
-Add the following key to your `settings.json`:
+`settings.json` に次のキーを追加します：
 
 ```json
 {
@@ -56,39 +36,32 @@ Add the following key to your `settings.json`:
 }
 ```
 
-## Using the `/restore` command
+## `/restore` コマンドの使用
 
-Once enabled, checkpoints are created automatically. To manage them, you use the
-`/restore` command.
+有効にすると、チェックポイントは自動的に作成されます。これらを管理するには、`/restore` コマンドを使用します。
 
-### List available checkpoints
+### 利用可能なチェックポイントの一覧表示
 
-To see a list of all saved checkpoints for the current project, simply run:
+現在のプロジェクトで保存されているすべてのチェックポイントのリストを表示するには、単に以下を実行します：
 
 ```
 /restore
 ```
 
-The CLI will display a list of available checkpoint files. These file names are
-typically composed of a timestamp, the name of the file being modified, and the
-name of the tool that was about to be run (e.g.,
-`2025-06-22T10-00-00_000Z-my-file.txt-write_file`).
+CLI は、利用可能なチェックポイントファイルの一覧を表示します。これらのファイル名は通常、タイムスタンプ、変更されるファイル名、実行されようとしていたツール名で構成されています（例：`2025-06-22T10-00-00_000Z-my-file.txt-write_file`）。
 
-### Restore a specific checkpoint
+### 特定のチェックポイントの復元
 
-To restore your project to a specific checkpoint, use the checkpoint file from
-the list:
+プロジェクトを特定のチェックポイントに復元するには、リストにあるチェックポイントファイルを使用します：
 
 ```
 /restore <checkpoint_file>
 ```
 
-For example:
+例：
 
 ```
 /restore 2025-06-22T10-00-00_000Z-my-file.txt-write_file
 ```
 
-After running the command, your files and conversation will be immediately
-restored to the state they were in when the checkpoint was created, and the
-original tool prompt will reappear.
+コマンドを実行すると、ファイルと会話はチェックポイントが作成されたときの状態に即座に復元され、元のツールプロンプトが再表示されます。
