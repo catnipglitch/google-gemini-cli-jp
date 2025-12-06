@@ -1,3 +1,65 @@
+# AI Agent Operation Guidelines
+
+## 1. Document Management System
+
+The development process is managed using the following three documents.
+
+### 1-1. FEATURES.md (Ideas & Requests)
+- **Purpose**: The "Entry Point" for development. Stores user ideas, feature requests, bug reports, and TODOs.
+- **Usage**:
+  - Record ideas from user instructions or agent insights.
+  - Content here acts as a trigger for task execution.
+  - Low-priority items and future expansion concepts are also recorded here.
+
+### 1-2. PRD.md (Product Requirements Document)
+- **Purpose**: The "Specifications". A specification document written by Gemini (the agent).
+- **Usage**:
+  - Update this file once specifications are solidified after discussion in **Plan Mode**.
+  - Concrete implementation details derived from `FEATURES.md` ideas.
+  - No specific format is enforced, but structure it as needed.
+- **Workflow**: Core of the flow: `FEATURES.md` (Idea) -> `PRD.md` (Spec) -> Implementation (Impl).
+
+### 1-3. AGENT_TASK_LIST.md (Task Visualization & State Sharing)
+- **Purpose**:
+  - Visualization of "Current State" and "Progress" for the user and the team.
+  - Assists in understanding progress and recovery in case of agent internal errors or session disconnects.
+  - **Note**: This does not replace the agent's internal thought process or short-term memory (plan management), but serves as an "external sharing" and "persistence" checkpoint for users and other agents (Gemini, Claude, Codex, GitHub Copilot).
+- **Operational Rules**:
+  - **Task ID**: Always assign a **unique index (ID)** to each task (e.g., `[T-001]`, `[TASK-10]`).
+  - **Update Timing**: Update after `PRD.md` updates, when new work arises, and upon task completion.
+  - **Line Limit**: If the file size exceeds **100 lines**, ask the user for confirmation to delete (archive) completed tasks.
+    - **Prohibition**: Agents must not delete past logs without permission.
+  - **Task Granularity**: To minimize file write costs and steps, do not list "micro-tasks" like variable name fixes or indentation adjustments. Define and manage tasks in **milestone units** meaningful for progress, such as "Feature Implementation Complete", "Tests Passed", or "Major Bug Fix".
+
+---
+
+## 2. Operation Modes
+
+Agents must strictly adhere to the following two modes.
+**The default mode is Plan Mode.**
+
+### 2-1. Plan Mode (Default)
+- **Goal**: Dialogue, planning, requirements definition, documentation.
+- **Constraints**:
+  - **NO Coding**: Do not generate or modify code files.
+  - **Document Editing Allowed**: Creating/editing `.md` and `.txt` files is permitted.
+- **Requirements**:
+  - **Clarify**: Ask questions to clarify requirements before starting tasks.
+  - **Evaluate**: For complex tasks or designs, doubt efficiency/safety and propose at least 2 alternatives (e.g., Plan A, Plan B).
+- **Exception**: If an image generation command (e.g., `/generate`) is issued, execute the tool immediately.
+- **Output**: Always end the conversation with `<Plan Mode>`.
+
+### 2-2. Edit Mode (Implementation Mode)
+- **Goal**: Implementation, coding.
+- **Constraints**:
+  - Code generation and modification are allowed.
+  - Standard agent behavior applies.
+- **Mode Switching**:
+  - **User Instruction**: When there is a clear instruction from the user (e.g., "Switch to Edit Mode").
+  - **Agent Declaration**: When the agent declares intent (e.g., "Proceeding with Plan A. Switching to Edit Mode") and obtains user consent.
+
+---
+
 ## Building and running
 
 Before submitting any changes, it is crucial to validate them by running the
