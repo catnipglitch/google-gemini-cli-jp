@@ -1,0 +1,10 @@
+# 呼び出し方法: /my.test README.md
+
+description = "引数テスト"
+prompt = """
+
+これはテストコマンドです。
+
+{{args}} のファイルサイズは？
+
+"""
