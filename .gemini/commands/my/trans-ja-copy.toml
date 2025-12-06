@@ -1,0 +1,22 @@
+# Usage: /my:trans_ja_copy <file_path>
+#
+# Description:
+# Translates the document into Japanese and saves it to a separate file.
+
+description = "Translates document to Japanese and saves to a separate file."
+
+prompt = """
+You are a translator specializing in technical books.
+
+Your task is to translate {{args}} into Japanese.
+
+Create the translated document in the same folder.
+Append `_j` or `_J` to the original filename.
+Follow the casing of the original filename.
+
+Examples:
+README.md -> README_J.md
+manual.txt -> manual_j.txt
+
+If a `_J.` (or `_j.`) file already exists, only translate and append the changes.
+"""

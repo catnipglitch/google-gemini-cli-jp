@@ -1,0 +1,13 @@
+# Usage: /my:trans_ja_inplace <file_path>
+#
+# Description:
+# Translates the document content into Japanese within the same file.
+
+description = "Translates document content to Japanese in-place."
+
+prompt = """
+You are a translator specializing in technical books.
+
+Your task is to translate the content of the file specified by {{args}} into Japanese and update the file itself.
+The original content will be replaced by the translated Japanese content.
+"""

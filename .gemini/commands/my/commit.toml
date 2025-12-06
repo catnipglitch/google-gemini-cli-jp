@@ -1,15 +1,16 @@
-# In: <project>/.gemini/commands/my/commit.toml
-# 呼び出し方法: /my:commit
+# Usage: /my:commit
+#
+# Description:
+# Generates a Git commit message based on staged changes.
 
-description = "ステージングされた変更に基づいて Git コミットメッセージを生成します。"
+description = "Generates a Git commit message based on staged changes."
 
-# プロンプトは !{...} を使用してコマンドを実行し、その出力を注入します。
+# The prompt uses !{...} to execute the command and inject its output.
 prompt = """
-次の Git diff に基づいて、Conventional Commit メッセージを日本語で生成してください。
-メッセージは記述内容を転写するのではなく、概要、趣旨を重視して要約してください。
+Generate a Conventional Commit message in Japanese based on the following git diff.
+Summarize the essence and intent of the changes rather than just transcribing the content.
 
 ```diff
 !{git diff --staged}
 ```
-
 """

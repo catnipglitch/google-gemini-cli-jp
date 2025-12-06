@@ -1,0 +1,12 @@
+# Usage: /my:test <file_path>
+#
+# Description:
+# Test command for arguments.
+
+description = "Argument test command."
+
+prompt = """
+This is a test command.
+
+What is the file size of {{args}}?
+"""

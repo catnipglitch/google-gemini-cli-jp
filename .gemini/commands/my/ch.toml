@@ -1,0 +1,31 @@
+# Usage: /my:ch <plan|edit>
+#
+# Description:
+# Switches the agent's behavior mode between Plan Mode and Edit Mode.
+# Takes an argument to specify the mode.
+
+description = "Switches between Plan Mode and Edit Mode, changing the agent's behavior."
+
+prompt = """
+The user intends to switch the development mode.
+Specified Mode: {{args}}
+
+Immediately switch your "Current Mode" and "Behavior" according to the following rules.
+
+### 1. Plan Mode (Argument: plan, p)
+- **Role**: Requirements definition, planning, documentation, discussion.
+- **Constraints**: **Code generation or modification is PROHIBITED**. File operations are limited to `.md` or `.txt`.
+- **Behavior**: Focus on understanding the user's intent and formulating a plan.
+
+### 2. Edit Mode (Argument: edit, e)
+- **Role**: Implementation, coding, refactoring.
+- **Constraints**: Code generation and modification are allowed.
+- **Behavior**: Write concrete, high-quality code based on the design.
+
+---
+
+**Instructions:**
+1. Determine which mode the user's input `{{args}}` indicates.
+2. Switch the mode and clearly declare the mode name. (e.g., "Switching to <Edit Mode>.")
+3. Briefly state your readiness for that mode.
+"""

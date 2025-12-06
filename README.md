@@ -25,12 +25,7 @@
 - **ドキュメントの日本語化**:
   `docs` フォルダの内容を日本語に翻訳し、`docs_j` フォルダへ格納しています。
 - **カスタムコマンドのサンプル**:
-  `.gemini/commands/my/` フォルダに、便利なカスタムコマンドのサンプルを追加しました。
-  - `/my:ask-docs`: ローカルドキュメントを検索して回答
-  - `/my:commit`: Gitのステージング内容からコミットメッセージ生成
-  - `/my:proof`: ドキュメントの校正
-  - `/my:trans_*`: 翻訳アシスタント機能
-  - `/my:weekly-news`: 週間ニュースダイジェスト作成
+  `.gemini/commands/my/` フォルダに便利なカスタムコマンドのサンプルを追加しました。詳細はこちらを参照してください: [.gemini/commands/my/README.md](.gemini/commands/my/README.md)
 
 ### English Description
 
@@ -46,9 +41,4 @@ For the latest information and details about the original project, please refer 
 - **Japanese Documentation**:
   The contents of the `docs` folder have been translated into Japanese and stored in the `docs_j` folder.
 - **Sample Custom Commands**:
-  Added sample custom commands in the `.gemini/commands/my/` folder.
-  - `/my:ask-docs`: Answer questions by searching local docs
-  - `/my:commit`: Generate commit messages from staged changes
-  - `/my:proof`: Proofread documents
-  - `/my:trans_*`: Translation assistants
-  - `/my:weekly-news`: Create a weekly news digest
+  Added sample custom commands in the `.gemini/commands/my/` folder. For details, refer to: [.gemini/commands/my/README.md](.gemini/commands/my/README.md)

@@ -1,9 +1,9 @@
-# 呼び出し方法: /ask-gemini-cli
+# Usage: /my:ask-gemini-cli
 #
-# 説明:
-# ワークスペース内のドキュメントをコンテキストとして読み込んだ状態で、
-# Gemini CLI に関する質問に対話形式で回答します。
-# 実行すると、まずユーザーに質問内容を尋ねます。
+# Description:
+# Answers questions about Gemini CLI in an interactive dialogue format by pre-loading
+# documentation from the workspace into the context.
+# Upon execution, it first asks the user what their question is.
 
 description = "Answers questions about Gemini CLI by pre-loading local docs into context."
 
@@ -33,9 +33,9 @@ The following documentation from the current workspace has been loaded into your
 (Interactive Mode)
 
 # Instructions
-1.  Start by asking the user: "Gemini CLIについて何か質問はありますか？" (Do not answer any question yet).
+1.  Start by asking the user: "Do you have any questions about Gemini CLI?" (Do not answer any question yet).
 2.  Wait for the user's response.
-3.  Once the user provides a question, confirm your understanding (e.g., "〜ということですね？") and then answer using ONLY the information provided in the "Documentation Context" above.
+3.  Once the user provides a question, confirm your understanding and then answer using ONLY the information provided in the "Documentation Context" above.
 4.  Cite the source file names if possible (e.g., "According to `docs/cli/settings.md`...").
 5.  If the information is not present in the context, state that clearly.
 6.  Continue the conversation as needed to clarify or provide further details.

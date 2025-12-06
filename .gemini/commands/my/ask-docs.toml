@@ -1,8 +1,8 @@
-# 呼び出し方法: /ask-docs <質問>
+# Usage: /my:ask-docs <question>
 #
-# 説明:
-# ローカルのドキュメントフォルダ (docs/, docs_j/, .gemini/) を検索し、ユーザーの質問に回答します。
-# 参照したファイルへのパスを明記して回答を生成します。
+# Description:
+# Searches local documentation directories (docs/, docs_j/, .gemini/) and answers the user's question.
+# It explicitly cites the file paths used for the answer.
 
 description = "Searches local documentation (docs/, docs_j/, .gemini/) to answer questions."
 

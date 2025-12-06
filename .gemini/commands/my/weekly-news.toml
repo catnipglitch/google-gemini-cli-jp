@@ -1,44 +1,50 @@
-description = "指定トピックの週間ニュース（公式・メディア）を収集しMarkdownファイルに出力します"
+# Usage: /my:weekly-news <topic>
+#
+# Description:
+# Collects weekly news (official & media) for a specified topic and outputs to a Markdown file.
+
+description = "Collects weekly news for a topic and outputs to a Markdown file."
+
 prompt = """
-# 指示: 週間ニュースダイジェスト作成
+# Instruction: Create Weekly News Digest
 
-トピック「{{args}}」に関する過去1週間のニュースを調査し、指定のフォーマットでファイルに出力してください。
+Investigate news from the past week regarding the topic "{{args}}" and output it to a file in the specified format.
 
-## 1. 検索対象期間
-- 本日の日付を確認し、そこから過去7日間の情報を対象としてください。
+## 1. Search Period
+- Check today's date and target information from the past 7 days.
 
-## 2. 収集要件 (目標: 合計10件)
-以下のバランスで情報を収集してください。重複している内容は1つにまとめてください。最終的に10件未満でも構いません。
+## 2. Collection Requirements (Target: Total 10 items)
+Collect information with the following balance. Consolidate overlapping content. Less than 10 items is acceptable.
 
-1.  **公式・準公式情報 (目標: 5件)**
-    - 公式サイト、公式ブログ、公式ユーザーフォーラム
-    - 正規代理店、海外支社のアナウンス
-    - 公式SNSアカウント
-2.  **大手メディア情報 (目標: 5件)**
-    - 大手ITニュースサイト、新聞、業界紙など
+1.  **Official/Semi-official Information (Target: 5 items)**
+    - Official websites, blogs, user forums.
+    - Official distributors, overseas branch announcements.
+    - Official SNS accounts.
+2.  **Major Media Information (Target: 5 items)**
+    - Major IT news sites, newspapers, trade journals, etc.
 
-## 3. 優先して抽出する内容
-以下のカテゴリに該当する情報を最優先で収集してください。
-- **新製品、新サービス、ユーザーにとってお得な情報**
-- **重大な不具合、欠陥などユーザーが即座に対応が必要なアナウンスメント**
+## 3. Priority Content
+Prioritize collecting information falling into these categories:
+- **New products, new services, beneficial information for users.**
+- **Critical bugs, defects, or announcements requiring immediate user action.**
 
-## 4. 出力アクション
-調査結果をまとめ、以下の仕様でファイルを作成してください（`write_file`ツールを使用）。
+## 4. Output Action
+Summarize the investigation results and create a file with the following specifications (use `write_file` tool).
 
-- **出力先フォルダ**: `.gemini/output/`
-- **ファイル名**: `news_digest_{{args}}.md` (スペースはアンダースコアに置換、必要に応じて日付サフィックス付与)
-- **ファイル内容 (Markdown)**:
-    - タイトル
-    - 調査期間
-    - 重要なお知らせ（不具合・欠陥等）
-    - 新製品・新サービス
-    - 公式情報まとめ
-    - メディア報道まとめ
-    - (各項目にはタイトル、要約、参照URLを記載)
+- **Output Directory**: `.gemini/output/`
+- **Filename**: `news_digest_{{args}}.md` (Replace spaces with underscores, add date suffix if necessary)
+- **File Content (Markdown)**:
+    - Title
+    - Investigation Period
+    - Important Notices (Bugs, Defects, etc.)
+    - New Products/Services
+    - Official Information Summary
+    - Media Coverage Summary
+    - (Include title, summary, and reference URL for each item)
 
-## 実行フロー
-1. `google_web_search` を使用して、「{{args}} news」「{{args}} 公式」「{{args}} 不具合」などのクエリで幅広く検索を行う。
-2. 情報を精査・分類する。
-3. 指定のパスにMarkdownファイルを書き出す。
-4. ユーザーに完了報告とファイルパスを伝える。
+## Execution Flow
+1.  Use `google_web_search` to perform broad searches with queries like "{{args}} news", "{{args}} official", "{{args}} bugs".
+2.  Review and categorize the information.
+3.  Write the Markdown file to the specified path.
+4.  Report completion and the file path to the user.
 """

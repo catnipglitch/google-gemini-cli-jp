@@ -1,13 +1,17 @@
-# 呼び出し方法: /my.proof README.md
+# Usage: /my:proof <file_path>
+#
+# Description:
+# Corrects typos, inconsistencies, and Markdown formatting in the specified document.
 
-description = "ドキュメントの誤字脱字・表記ゆれ・マークダウン形式を修正"
+description = "Corrects typos, inconsistencies, and Markdown formatting in the document."
+
 prompt = """
-{{args}} の文章を以下の基準で修正してください。
+Correct the text in {{args}} based on the following criteria:
 
-- 誤字脱字の修正
-- 表記ゆれの統一
-- マークダウン形式の整理
-  - GitHub Flavored Markdown (GFM)に準拠
-  - リスト使用時は、番号付きリストを新規に作成しないでください。既存の番号付きリストは維持してください。
-  - Bold(**) は使用しないでください。
+- Fix typos and omissions.
+- Unify terminology inconsistencies.
+- Organize Markdown formatting:
+  - Comply with GitHub Flavored Markdown (GFM).
+  - When using lists, do not create new numbered lists. Maintain existing numbered lists.
+  - Do not use Bold (**).
 """
