@@ -1,0 +1,36 @@
+# 呼び出し方法: /ask-docs <質問>
+#
+# 説明:
+# ローカルのドキュメントフォルダ (docs/, docs_j/, .gemini/) を検索し、ユーザーの質問に回答します。
+# 参照したファイルへのパスを明記して回答を生成します。
+
+description = "Searches local documentation (docs/, docs_j/, .gemini/) to answer questions."
+
+prompt = """
+## Mission: Answer Questions from Local Documentation
+
+Your task is to answer the user's question by searching for and reading relevant documentation within the current workspace.
+
+**Target Directories:**
+- `docs/`
+- `docs_j/` (Japanese documentation)
+- `.gemini/`
+
+### Workflow:
+
+1.  **Search for Documentation**:
+    *   Use `glob` or `list_directory` to find relevant files in the target directories that might contain the answer to the user's question: {{args}}.
+    *   Prioritize files with names matching keywords in the query.
+
+2.  **Read Content**:
+    *   Read the content of the most promising files using `read_file`.
+
+3.  **Synthesize Answer**:
+    *   Answer the user's question based **only** on the information found in the documentation.
+    *   **Citation Required:** You MUST explicitly cite the file path(s) where the information came from using the format: `[Source: path/to/file.md]`.
+    *   If the information is NOT found, state that clearly. Do not hallucinate answers.
+
+### QUESTION:
+
+{{args}}
+"""

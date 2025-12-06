@@ -5,7 +5,8 @@ description = "ステージングされた変更に基づいて Git コミット
 
 # プロンプトは !{...} を使用してコマンドを実行し、その出力を注入します。
 prompt = """
-次の Git diff に基づいて、Conventional Commit メッセージを生成してください。
+次の Git diff に基づいて、Conventional Commit メッセージを日本語で生成してください。
+メッセージは記述内容を転写するのではなく、概要、趣旨を重視して要約してください。
 
 ```diff
 !{git diff --staged}
