@@ -7,10 +7,6 @@
 
 ---
 
-## README.md 記載内容
-
-以下が `README.md` に記載する内容です。
-
 ### 日本語説明
 
 このリポジトリは、Google Gemini CLI ( [google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli) ) のフォークです。
